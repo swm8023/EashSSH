@@ -1,7 +1,6 @@
 #!/bin/bash
 
-path=$(dirname $0)
-
+path=`S=\`readlink "$BASH_SOURCE"\`; [ -z "$S" ] && S=$BASH_SOURCE; dirname $S`
 funcsfile=$path"/../lib/funcs.sh"
 . $funcsfile
 
