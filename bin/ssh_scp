@@ -1,0 +1,13 @@
+#!/bin/bash
+
+path=$(dirname $0)
+
+funcsfile=$path"/../lib/funcs.sh"
+. $funcsfile
+
+if (($# != 4))
+then
+    echo "Usage : ssh_scp hostid direction[toloc|tofar] localfile remotefile"
+else
+    ssh_scp $1 $2 $3 $4
+fi

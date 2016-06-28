@@ -1,0 +1,13 @@
+#!/bin/bash
+
+path=$(dirname $0)
+
+funcsfile=$path"/../lib/funcs.sh"
+. $funcsfile
+
+if (($# != 2))
+then
+    echo "Usage : ssh_cmd hostid command"
+else
+    ssh_cmd $1 "$2"
+fi

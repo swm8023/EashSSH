@@ -1,0 +1,58 @@
+#!/usr/bin/expect
+
+# support colors: red|green
+proc colorText {color text} {
+    switch -- $color {
+        "green" { return "\033\[32m$text\33\[0m" }
+        "red" { return "\033\[31m$text\33\[0m"}
+    }
+    return $text
+}
+
+proc putsGreen {text} {
+    puts [colorText "green" $text]
+}
+
+proc putsRed {text} {
+    puts [colorText "red" $text]
+}
+
+# 0 Success
+# 1 Password Error
+# 2 Timeout
+# 3 Eof
+# 4 Unknow Error
+# 5 Password OK and receive EOF
+proc inputPass {pass specstr} {
+    expect {
+        "yes/no" { send "yes\r"; exp_continue }
+        "assword:" { send "$pass\r"; }
+        timeout { return 2 }
+        eof { return 3 }
+    }
+    expect {
+        "assword:" { return 1 }
+        -re $specstr { return 0}
+        timeout { return 2 }
+    }
+    return 4
+}
+
+proc inputPassErrstr {errno} {
+    switch -- $errno {
+        1 { return "Password Error"}
+        2 { return "Timeout"}
+        3 { return "Network Error" }
+        4 { return "Unknow Error"}
+    }
+    return ""
+}
+
+proc waitNextline {} {
+    expect {
+        -re "\\\$|#" { set ret 0}
+        timeout { set ret 1}
+    }
+    return $ret
+}
+

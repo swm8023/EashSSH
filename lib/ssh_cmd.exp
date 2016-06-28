@@ -1,0 +1,38 @@
+#!/usr/bin/expect
+
+set ip   [lindex $argv 0]
+set port [lindex $argv 1]
+set user [lindex $argv 2]
+set pass [lindex $argv 3]
+set cmd  [lindex $argv 4]
+
+set timeout 30
+
+# absoulte path of this script
+set path [file dirname [file normalize [info script]]]
+source "$path/procs.exp"
+
+spawn ssh -p $port $user@$ip
+set ret [inputPass $pass "\\\$|#"]
+if {$ret == 0} {
+    putsGreen "\nLogin $user@$ip Success!"
+    # run command and wait command end
+    send "$cmd\r"
+    set timeout 3600
+    set cmdret [waitNextline]
+    set timeout 30
+    if { $cmdret == 0} {
+        putsGreen "\nCommand Execute Completely!"
+    } elseif { $cmdret == 1} {
+        putsGreen "\nCommand Execute Timeout!"
+    }
+    # exit from remote host
+    send "exit\r"
+    expect eof
+    putsGreen "Logout From $ip!"
+} else {
+    putsRed "\nLogin $user@$ip Failed! ([inputPassErrstr $ret])"
+    exit 1
+}
+
+
